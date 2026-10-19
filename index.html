@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web2Design — Convert Any Webpage to Editable Figma Designs</title>
+  <meta name="description" content="Turn live websites, HTML, styles, and typography into clean, responsive Figma components with native Auto Layout. 5 free imports every month.">
+  <link rel="icon" type="image/png" href="assets/icon128.png">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Web2Design — Convert Any Webpage to Editable Figma Designs">
+  <meta property="og:description" content="Export live websites into clean, responsive Figma components with native Auto Layout.">
+  <meta property="og:image" content="assets/figma-cover-1920x1080.png">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b0d13;
+      --card-bg: #141722;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(255, 255, 255, 0.14);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --max-w: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient background gradient */
+    .glow-bg {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 550px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, rgba(6, 182, 212, 0.08) 40%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navigation */
+    header {
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(11, 13, 19, 0.85);
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand img {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 24px rgba(99, 102, 241, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--card-hover);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 90px 0 60px;
+      text-align: center;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .pill-badge span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 50%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: clamp(1.1rem, 2vw, 1.25rem);
+      color: var(--text-muted);
+      max-width: 720px;
+      margin: 0 auto 36px;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .hero-showcase {
+      position: relative;
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+      background: var(--card-bg);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.15);
+      margin-bottom: 40px;
+    }
+
+    .hero-showcase img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Trust / Stats strip */
+    .trust-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      padding: 30px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      margin: 40px 0 80px;
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .stat-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Workflow / Steps */
+    .section-title {
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 50px;
+    }
+
+    .section-title h2 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+      margin-bottom: 100px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .step-card:hover {
+      border-color: var(--card-hover);
+      transform: translateY(-3px);
+    }
+
+    .step-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      margin-bottom: 20px;
+    }
+
+    .step-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .step-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 100px;
+    }
+
+    .feature-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .feature-icon {
+      font-size: 1.8rem;
+    }
+
+    .feature-box h4 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .feature-box p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Pricing Section */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
+      max-width: 900px;
+      margin: 0 auto 100px;
+    }
+
+    .price-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 40px 32px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .price-card.featured {
+      border: 2px solid var(--primary);
+      box-shadow: 0 10px 40px -10px var(--primary-glow);
+    }
+
+    .badge-top {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 4px 16px;
+      border-radius: 9999px;
+    }
+
+    .price-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .price-amount {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .price-amount span {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .price-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+    }
+
+    .price-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 36px;
+      flex-grow: 1;
+    }
+
+    .price-features li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .price-features li svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--accent-green);
+      flex-shrink: 0;
+    }
+
+    /* FAQ */
+    .faq-list {
+      max-width: 800px;
+      margin: 0 auto 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .faq-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    .faq-item h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .faq-item p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Legal / Policy Section */
+    .legal-section {
+      background: rgba(20, 23, 34, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 36px;
+      margin-bottom: 80px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .legal-section h3 {
+      color: #fff;
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    .legal-section h4 {
+      color: #e2e8f0;
+      font-size: 1rem;
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 48px 0 36px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.88rem;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 18px;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .hero {
+        padding: 50px 0 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-bg"></div>
+
+  <!-- Navigation -->
+  <header>
+    <div class="container nav-inner">
+      <a href="#" class="brand">
+        <img src="assets/icon128.png" alt="Web2Design Icon">
+        Web2Design
+      </a>
+      <nav class="nav-links">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a href="#privacy">Privacy</a>
+      </nav>
+      <div>
+        <a href="#pricing" class="btn btn-primary">Get Pro</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="pill-badge">
+        <span class="dot"></span>
+        <span>Version 1.0 Ready • 5 Free Imports Monthly</span>
+      </div>
+
+      <h1>
+        Convert Any Webpage into<br>
+        <span class="gradient-text">Editable Figma Designs</span>
+      </h1>
+
+      <p>
+        Extract live websites, layouts, vectors, and typography directly into native Figma Auto Layout components. No manual recreation or screenshots required.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#pricing" class="btn btn-primary" style="padding: 14px 28px; font-size: 1.05rem;">
+          Get Web2Design Pro
+        </a>
+        <a href="#how-it-works" class="btn btn-secondary" style="padding: 14px 24px; font-size: 1.05rem;">
+          See How It Works
+        </a>
+      </div>
+
+      <!-- Hero Visual -->
+      <div class="hero-showcase">
+        <img src="assets/figma-cover-1920x1080.png" alt="Web2Design transformation from live website to Figma Auto Layout layers">
+      </div>
+
+      <!-- Quick Stats / Trust Strip -->
+      <div class="trust-strip">
+        <div class="stat-card">
+          <h3>100%</h3>
+          <p>Native Figma Auto Layout</p>
+        </div>
+        <div class="stat-card">
+          <h3>&lt; 5s</h3>
+          <p>Average Capture Time</p>
+        </div>
+        <div class="stat-card">
+          <h3>Client-Side</h3>
+          <p>Zero Server Data Storage</p>
+        </div>
+        <div class="stat-card">
+          <h3>5 Free</h3>
+          <p>Page Imports Every Month</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" style="padding: 40px 0;">
+    <div class="container">
+      <div class="section-title">
+        <h2>From Live Web to Figma in 3 Simple Steps</h2>
+        <p>No tedious tracing, manual copy-pasting, or redrawing vector icons.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h3>Capture Webpage</h3>
+          <p>Open any live website in Google Chrome, click the Web2Design extension icon, and select your capture mode. The extension parses DOM trees, styles, fonts, and layout rules client-side.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h3>Copy or Save</h3>
+          <p>Copy the optimized design payload to your clipboard in 1 click, or export it as a lightweight .json snapshot for team handoffs.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h3>Paste in Figma</h3>
+          <p>Launch the Web2Design plugin in Figma, hit Paste, and watch clean Figma frames, nested auto layout containers, vectors, and editable typography generate automatically.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" style="padding: 40px 0;">
+    <div class="container">
+      <div class="section-title">
+        <h2>Engineered for High-Fidelity Reproduction</h2>
+        <p>Built from the ground up to produce production-ready Figma files you can actually edit.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-box">
+          <div class="feature-icon">📐</div>
+          <h4>True Auto Layout</h4>
+          <p>Flexbox directions, grid structures, margins, paddings, and alignment are converted directly into Figma auto layout frames rather than static absolute coordinate boxes.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon">🔤</div>
+          <h4>Smart Typography Engine</h4>
+          <p>Automatic web font detection, fallbacks, line-height scaling, and intelligent multiline text wrapping prevent clipped or runaway text frames.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon">✨</div>
+          <h4>Vector & Icon Extraction</h4>
+          <p>Preserves inline SVGs, pseudo-element icons (`::before` / `::after`), CSS gradients, and box shadows cleanly as native Figma vectors and layer fills.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon">⚡</div>
+          <h4>Instant Clipboard Bridge</h4>
+          <p>Zero-friction workflow using browser-to-plugin memory bridges. Seamless transfer without uploading sensitive company designs to third-party cloud servers.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon">🔒</div>
+          <h4>Private & Secure</h4>
+          <p>All parsing runs locally on your computer. Your designs, internal staging links, and private intranet pages never touch external databases.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon">🔄</div>
+          <h4>Monthly Quota or Unlimited Pro</h4>
+          <p>Enjoy 5 full imports every month completely free, or unlock unlimited captures and lifetime updates with a single license key.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" style="padding: 40px 0;">
+    <div class="container">
+      <div class="section-title">
+        <h2>Simple, Transparent Pricing</h2>
+        <p>Start for free. Upgrade only when your workflow demands unlimited power.</p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Free Plan -->
+        <div class="price-card">
+          <div class="price-name">Free Starter</div>
+          <div class="price-amount">$0 <span>/ forever</span></div>
+          <p class="price-desc">Perfect for occasional conversions and testing web designs.</p>
+          <ul class="price-features">
+            <li>
+              <svg viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              5 Full Webpage Imports / month
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              Native Figma Auto Layout
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              Smart Typography Wrapping
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              Direct Clipboard Bridge
+            </li>
+          </ul>
+          <a href="#how-it-works" class="btn btn-secondary">Get Started Free</a>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="price-card featured">
+          <div class="badge-top">Most Popular</div>
+          <div class="price-name">Web2Design Pro</div>
+          <div class="price-amount">$9 <span>/ month</span></div>
+          <p class="price-desc">For professional designers, UI/UX agencies, and product teams.</p>
+          <ul class="price-features">
+            <li>
+              <svg viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              <strong>Unlimited</strong> Webpage Imports
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              Complete Vector & SVG Extraction
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              Commercial Use Allowed
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              Instant License Key via Lemon Squeezy
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+              Priority Email Support & Future Updates
+            </li>
+          </ul>
+          <a id="buy-pro-btn" href="#" class="btn btn-primary">Upgrade to Pro</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" style="padding: 40px 0;">
+    <div class="container">
+      <div class="section-title">
+        <h2>Frequently Asked Questions</h2>
+        <p>Everything you need to know about Web2Design and licensing.</p>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <h4>How does the monthly free quota work?</h4>
+          <p>Every user gets 5 full-page imports every calendar month at zero cost. When the new month begins, your quota resets back to 5 automatically. You can check your remaining credits directly in the plugin header.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>How do I activate my Pro license?</h4>
+          <p>After completing checkout on Lemon Squeezy, you will immediately receive your unique license key on the order confirmation screen and in your receipt email. In the Figma plugin, click the gear icon (or "Enter License Key"), paste your key, and click Activate.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>Is my website data secure and private?</h4>
+          <p>Yes, 100%. Web2Design processes all webpage structures and styles locally inside your browser and transfers them directly to Figma via the local clipboard. We do not store, log, or transmit any captured page content to remote servers.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>Can I use Web2Design on password-protected or localhost sites?</h4>
+          <p>Yes. Because the extension runs inside your active browser session, it can capture staging environments, localhost servers, and authenticated portals that external web crawlers cannot access.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Legal / Privacy Policy -->
+  <section id="privacy" style="padding: 40px 0;">
+    <div class="container">
+      <div class="legal-section">
+        <h3>Privacy Policy & Merchant Terms</h3>
+        <p><strong>Last Updated: October 2026</strong></p>
+        
+        <h4>1. Data Processing and Privacy</h4>
+        <p>Web2Design is dedicated to protecting your privacy. The Chrome extension and Figma plugin operate entirely client-side. The extension only inspects the active browser tab when you explicitly click the extension action. We do not track browsing history, do not log user keystrokes, and do not store any captured webpage markup on external servers.</p>
+
+        <h4>2. Payments and Billing</h4>
+        <p>All payments, orders, tax compliance, and license key fulfillments are securely processed by our merchant of record, <strong>Lemon Squeezy</strong>. We do not collect or store credit card numbers or financial account details.</p>
+
+        <h4>3. Refund Policy</h4>
+        <p>If Web2Design Pro does not meet your expectations or cannot convert your target web layouts, you may request a full refund within 14 days of purchase. Simply contact our support team with your Lemon Squeezy order number.</p>
+
+        <h4>4. Support and Contact</h4>
+        <p>For support inquiries, license reissues, or technical assistance, contact: <strong>support@web2design.dev</strong> or reach out via our GitHub repository.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-links">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a href="#privacy">Privacy Policy</a>
+      </div>
+      <p>&copy; 2026 Web2Design. All rights reserved. Powered by Lemon Squeezy Merchant of Record.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
